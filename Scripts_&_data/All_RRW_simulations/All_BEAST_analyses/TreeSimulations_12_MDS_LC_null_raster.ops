@@ -1,0 +1,6 @@
+
+Operator analysis
+Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) Smoothed_Pr(accept)
+scale(location.diffusion.rates1)                  0.131   46409234   2214295  0.05     0.234       0.27        
+precisionGibbsOperator                                    3090766    148331   0.05     1.0         1.0         
+
