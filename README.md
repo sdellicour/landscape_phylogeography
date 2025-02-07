@@ -1,7 +1,7 @@
 Peaks and valleys of landscape phylogeography
 ===============
 
-This repo gathers the input files and scripts related to our study entitled "**Peaks and valleys of landscape phylogeography**" (Dellicour *et al*. *in prep.*). R scripts used to conduct the different analytical steps summarised within the workflow figure just below are all available in `R_scripts_analyses.r`.
+This repo gathers the input files and scripts related to our study entitled "**Peaks and valleys of viral landscape phylogeography**" (Dellicour *et al*. *in prep.*). R scripts used to conduct the different analytical steps summarised within the workflow figure just below are all available in `R_scripts_analyses.r`.
 
 <br>
 
