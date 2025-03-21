@@ -2,7 +2,7 @@
 # 2. Simulations conducted along a MCC tree whose branch durations are impacted by environmental distances
 # 3. Conducting all the MDS (multi-dimensional scaling) and cartogram transformations for the simulations
 # 4. Preparing the XML files for the different continuous phylogeographic analyses to conduct with BEAST
-# 5. Performing all the different landscape phylogeographic analyses (post hoc and preliminary analyses)
+# 5. Performing all the different landscape phylogeographic analyses (post hoc and prior-informed analyses)
 
 library(cartogram)
 library(diagram)
@@ -639,7 +639,7 @@ for (h in 1:length(simulationDirectories))
 			}
 	}
 
-# 5. Performing all the different landscape phylogeographic analyses (post hoc and preliminary analyses)
+# 5. Performing all the different landscape phylogeographic analyses (post hoc and prior-informed analyses)
 
 simulationDirectories = list("All_RRW_simulations"); resistance = TRUE; envVariable = raster("Elevation_16_k10.asc"); nberOfSimulations = 50; nberOfExtractionFiles = 100
 
@@ -1009,7 +1009,7 @@ for (g in 1:length(simulationDirectories))
 		# plot(nberOfTips[which(!is.na(temp))], BFs); print(nberOfTips[which(is.na(temp))])
 	}
 
-	# 5.3. Preliminary analyses
+	# 5.3. Prior-informed analyses
 
 for (g in 1:length(simulationDirectories))
 	{
