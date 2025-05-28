@@ -668,7 +668,8 @@ for (g in 1:length(simulationDirectories))
 							{
 								mostRecentSamplingDatum = max(read.csv(paste0(simulationDirectory,"/RABV_US1_simu.csv"), head=T)[,"endYear"])
 							}
-						burnIn = 51; randomSampling = FALSE; nberOfTreesToSample = 100; coordinateAttributeName = "location"; nberOfCores = 10
+						nberOfTrees = sum(grepl("tree STATE_",allTrees)); burnIn = round((0.1*(nberOfTrees-1))+1)
+						randomSampling = FALSE; nberOfTreesToSample = 100; coordinateAttributeName = "location"; nberOfCores = 10
 						# treeExtractions(localTreesDirectory, allTrees, burnIn, randomSampling, nberOfTreesToSample, mostRecentSamplingDatum, coordinateAttributeName, nberOfCores) # PROBLEM
 						trees = readAnnotatedNexus(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_",analyses[h],".trees"))
 						indices = sample((burnIn+1):length(trees), 100, replace=F)
@@ -723,7 +724,7 @@ for (g in 1:length(simulationDirectories))
 								col_start = colorRampPalette(brewer.pal(9,"PuBu"))(101)[1]
 								cols2 = colorRampPalette(brewer.pal(9,"PuBu"))(101)[(((tab[,"endYear"]-startingYear)/(samplingWindow[2]-startingYear))*100)+1]
 								for (j in 1:dim(tab)[1])
-									{	
+									{
 										curvedarrow(cbind(tab[j,"startLon"],tab[j,"startLat"]), cbind(tab[j,"endLon"],tab[j,"endLat"]), arr.length=0,
 													arr.width=0, lwd=0.3, lty=1, lcol="gray30", arr.col=NA, arr.pos=F, curve=0.1, dr=NA, endhead=F)
 									}
@@ -742,6 +743,32 @@ for (g in 1:length(simulationDirectories))
 									 axis.args=list(cex.axis=0.65, lwd=0, lwd.tick=0.4, tck=-1.0, col.tick="gray30", col.axis="gray30", line=0, mgp=c(0,0.1,0), at=seq(1,10,1)))
 								dev.off()
 							}
+					}
+			}
+	}
+simulationDirectory = "All_MCC_simulations/RABV_US1_on_DCs/RABV_US1_CS_s_3"; analyses = c("cartogram_k100Trans"); nberOfSimulations = 10
+for (h in 1:length(analyses))
+	{
+		for (i in 1:nberOfSimulations)
+			{
+				localTreesDirectory = paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_",analyses[h],"_ext"); dir.create(localTreesDirectory, showWarnings=F)		
+				allTrees = scan(file=paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_",analyses[h],".trees"), what="", sep="\n", quiet=T)
+				if (grepl("RRW_simulations",simulationDirectory))
+					{
+						mostRecentSamplingDatum = max(read.csv(paste0(simulationDirectory,"/Selected_simulations/TreeSimulations_",i,".csv"), head=T)[,"endYear"])
+					}
+				if (grepl("MCC_simulations",simulationDirectory))
+					{
+						mostRecentSamplingDatum = max(read.csv(paste0(simulationDirectory,"/RABV_US1_simu.csv"), head=T)[,"endYear"])
+					}
+				nberOfTrees = sum(grepl("tree STATE_",allTrees)); burnIn = round((0.1*(nberOfTrees-1))+1)
+				randomSampling = FALSE; nberOfTreesToSample = 100; coordinateAttributeName = "location"; nberOfCores = 10
+				trees = readAnnotatedNexus(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_",analyses[h],".trees"))
+				indices = sample((burnIn+1):length(trees), 100, replace=F)
+				for (j in 1:length(indices))
+					{
+						tab = postTreeExtractions(trees[[indices[j]]], mostRecentSamplingDatum)
+						write.csv(tab, paste0(localTreesDirectory,"/TreeExtractions_",j,".csv"), row.names=F, quote=F)
 					}
 			}
 	}
@@ -795,11 +822,11 @@ for (g in 1:length(simulationDirectories))
 				tab1 = read.table(paste0(directory,"/TreeSimulations_",i,"_original_coordinates_LC_seraphim_LR1.txt"), head=T)
 				tab2 = read.table(paste0(directory,"/TreeSimulations_",i,"_original_coordinates_LC_seraphim_BF1.txt"), head=T)
 				vS = tab1[,"LR_coefficients_Elevation_16_k10_R"]; hds = round(HDInterval::hdi(vS)[1:2],3)
-				results_1[i,"LC_beta_env"] = paste0(round(mean(vS),3)) # ," [",hds[1],", ",hds[2],"]")
+				results_1[i,"LC_beta_env"] = paste0(round(mean(vS),3)," [",hds[1],", ",hds[2],"]")
 				vS = tab1[,"LR_R2_Elevation_16_k10_R"]; hds = round(HDInterval::hdi(vS)[1:2],3)
-				results_1[i,"LC_R2_env"] = paste0(round(mean(vS),3)) # ," [",hds[1],", ",hds[2],"]")
+				results_1[i,"LC_R2_env"] = paste0(round(mean(vS),3)," [",hds[1],", ",hds[2],"]")
 				vS = tab1[,"LR_Q_Elevation_16_k10_R"]; hds = round(HDInterval::hdi(vS)[1:2],3)
-				results_1[i,"LC_Q"] = paste0(round(mean(vS),3)) # ," [",hds[1],", ",hds[2],"]")
+				results_1[i,"LC_Q"] = paste0(round(mean(vS),3)," [",hds[1],", ",hds[2],"]")
 				results_1[i,"LC_pQ"] = round(sum(vS>0)/length(vS),3)
 				if (as.numeric(results_1[i,"LC_pQ"]) > 0.9)
 					{
@@ -810,11 +837,11 @@ for (g in 1:length(simulationDirectories))
 				tab1 = read.table(paste0(directory,"/TreeSimulations_",i,"_original_coordinates_CS_seraphim_LR1.txt"), head=T)
 				tab2 = read.table(paste0(directory,"/TreeSimulations_",i,"_original_coordinates_CS_seraphim_BF1.txt"), head=T)
 				vS = tab1[,"LR_coefficients_Elevation_16_k10_R"]; hds = round(HDInterval::hdi(vS)[1:2],3)
-				results_2[i,"CS_beta_env"] = paste0(round(mean(vS),3)) # ," [",hds[1],", ",hds[2],"]")
+				results_2[i,"CS_beta_env"] = paste0(round(mean(vS),3)," [",hds[1],", ",hds[2],"]")
 				vS = tab1[,"LR_R2_Elevation_16_k10_R"]; hds = round(HDInterval::hdi(vS)[1:2],3)
-				results_2[i,"CS_R2_env"] = paste0(round(mean(vS),3)) # ," [",hds[1],", ",hds[2],"]")
+				results_2[i,"CS_R2_env"] = paste0(round(mean(vS),3)," [",hds[1],", ",hds[2],"]")
 				vS = tab1[,"LR_Q_Elevation_16_k10_R"]; hds = round(HDInterval::hdi(vS)[1:2],3)
-				results_2[i,"CS_Q"] = paste0(round(mean(vS),3)) # ," [",hds[1],", ",hds[2],"]")
+				results_2[i,"CS_Q"] = paste0(round(mean(vS),3)," [",hds[1],", ",hds[2],"]")
 				results_2[i,"CS_pQ"] = round(sum(vS>0)/length(vS),3)
 				if (as.numeric(results_2[i,"CS_pQ"]) > 0.9)
 					{
@@ -829,10 +856,32 @@ for (g in 1:length(simulationDirectories))
 		write.table(results_1, paste0(simulationDirectory,"/Posthoc_IBR_LC.txt"), row.names=F, quote=F, sep="\t")
 		results_2 = cleanResultsTable(read.csv(paste0(simulationDirectory,"/Posthoc_IBR_CS.csv"), head=T, sep=";"))
 		write.table(results_2, paste0(simulationDirectory,"/Posthoc_IBR_CS.txt"), row.names=F, quote=F, sep="\t")
-		vS = as.numeric(results_1[,"LC_Q"]); ci = round(quantile(vS,c(0.025,0.975)),3); BFs = as.numeric(gsub(">","",results_1[,"LC_BF"])); BFs = BFs[!is.na(BFs)]
-		cat("LC: Q = ",round(mean(vS),3)," [",ci[1],", ",ci[2],"], p(Q>0) = ",sum(vS>0),"/",length(vS),", BF>3: ",sum(BFs>=3),"/",length(BFs),", BF>20: ",sum(BFs>=20),"/",length(BFs),"\n",sep="")
-		vS = as.numeric(results_2[,"CS_Q"]); ci = round(quantile(vS,c(0.025,0.975)),3); BFs = as.numeric(gsub(">","",results_2[,"CS_BF"])); BFs = BFs[!is.na(BFs)]
-		cat("CS: Q = ",round(mean(vS),3)," [",ci[1],", ",ci[2],"], p(Q>0) = ",sum(vS>0),"/",length(vS),", BF>3: ",sum(BFs>=3),"/",length(BFs),", BF>20: ",sum(BFs>=20),"/",length(BFs),"\n",sep="")
+		vS1 = results_1[,"LC_Q"]; vS2 = as.numeric(results_1[,"LC_pQ"]); tmp = rep(NA, length(vS1))
+		for (i in 1:length(vS1)) tmp[i] = as.numeric(unlist(strsplit(vS1[i]," \\["))[1])
+		vS1 = tmp; ci1 = round(quantile(vS1,c(0.025,0.975)),3); ci2 = round(quantile(vS2,c(0.025,0.975)),2)
+		BFs = as.numeric(gsub(">","",results_1[,"LC_BF"])); BFs = BFs[!is.na(BFs)]
+		if (grepl("RRW_simulations",simulationDirectory))
+			{
+				cat("LC: Q = ",round(mean(vS1),3)," [",ci1[1],", ",ci1[2],"], p(Q>0) = ",sum(vS2>0),"/",length(vS2)," ",sep="")
+			}
+		if (grepl("MCC_simulations",simulationDirectory))
+			{
+				cat("LC: Q = ",round(mean(vS1),3)," [",ci1[1],", ",ci1[2],"], p(Q>0) = ",round(mean(vS2),2)," [",ci2[1],", ",ci2[2],"], ",sep="")
+			}
+		cat("BF>3: ",sum(BFs>=3),"/",length(BFs)," BF>20: ",sum(BFs>=20),"/",length(BFs),"\n",sep="")
+		vS1 = results_2[,"CS_Q"]; vS2 = as.numeric(results_2[,"CS_pQ"]); tmp = rep(NA, length(vS1))
+		for (i in 1:length(vS1)) tmp[i] = as.numeric(unlist(strsplit(vS1[i]," \\["))[1])
+		vS1 = tmp; ci1 = round(quantile(vS1,c(0.025,0.975)),3); ci2 = round(quantile(vS2,c(0.025,0.975)),2)
+		BFs = as.numeric(gsub(">","",results_2[,"CS_BF"])); BFs = BFs[!is.na(BFs)]
+		if (grepl("RRW_simulations",simulationDirectory))
+			{
+				cat("CS: Q = ",round(mean(vS1),3)," [",ci1[1],", ",ci1[2],"], p(Q>0) = ",sum(vS2>0),"/",length(vS2)," ",sep="")
+			}
+		if (grepl("MCC_simulations",simulationDirectory))
+			{
+				cat("CS: Q = ",round(mean(vS1),3)," [",ci1[1],", ",ci1[2],"], p(Q>0) = ",round(mean(vS2),2)," [",ci2[1],", ",ci2[2],"], ",sep="")
+			}
+		cat("BF>3: ",sum(BFs>=3),"/",length(BFs)," BF>20: ",sum(BFs>=20),"/",length(BFs),"\n",sep="")
 	}
 
 		# 5.2.2. Lineage diffusion velocity analyses
@@ -1022,20 +1071,26 @@ for (g in 1:length(simulationDirectories))
 		results_3b = matrix(nrow=nberOfSimulations, ncol=5); colnames(results_3b) = c("CGT_R2_null","CGT_R2_env","CGT_Q","CGT_pQ","CGT_BF")
 		for (i in 1:nberOfSimulations)
 			{
-				R2_mdsLCNul = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_LC_null_raster.log"), header=T)[52:501,"location.squareddistTime4.Rsquared"]
-				R2_mdsLCEnv = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_LC_env_raster.log"), header=T)[52:501,"location.squareddistTime4.Rsquared"]
+				R2_mdsLCNul = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_LC_null_raster.log"), header=T)
+				R2_mdsLCNul = R2_mdsLCNul[sample((((dim(R2_mdsLCNul)[1]-1)/10)+2):dim(R2_mdsLCNul)[1],900,replace=F),"location.squareddistTime4.Rsquared"]
+				R2_mdsLCEnv = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_LC_env_raster.log"), header=T)
+				R2_mdsLCEnv = R2_mdsLCEnv[sample((((dim(R2_mdsLCEnv)[1]-1)/10)+2):dim(R2_mdsLCEnv)[1],900,replace=F),"location.squareddistTime4.Rsquared"]
 				hds = round(HDInterval::hdi(R2_mdsLCNul),3); meanV = mean(R2_mdsLCNul); results_1a[i,"LC_R2_null"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				hds = round(HDInterval::hdi(R2_mdsLCEnv),3); meanV = mean(R2_mdsLCEnv); results_1a[i,"LC_R2_env"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				vS = R2_mdsLCEnv-R2_mdsLCNul; hds = round(HDInterval::hdi(vS)[1:2],3); meanV = mean(vS); results_1a[i,"LC_Q"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				p = sum(R2_mdsLCEnv>R2_mdsLCNul)/length(R2_mdsLCNul); results_1a[i,"LC_pQ"] = round(p,2); results_1a[i,"LC_BF"] = round(p/(1-p),1)			
-				R2_mdsCSNul = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_CS_null_raster.log"), header=T)[52:501,"location.squareddistTime4.Rsquared"]
-				R2_mdsCSEnv = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_CS_env_raster.log"), header=T)[52:501,"location.squareddistTime4.Rsquared"]
+				R2_mdsCSNul = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_CS_null_raster.log"), header=T)
+				R2_mdsCSNul = R2_mdsCSNul[sample((((dim(R2_mdsCSNul)[1]-1)/10)+2):dim(R2_mdsCSNul)[1],900,replace=F),"location.squareddistTime4.Rsquared"]
+				R2_mdsCSEnv = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_MDS_CS_env_raster.log"), header=T)
+				R2_mdsCSEnv = R2_mdsCSEnv[sample((((dim(R2_mdsCSEnv)[1]-1)/10)+2):dim(R2_mdsCSEnv)[1],900,replace=F),"location.squareddistTime4.Rsquared"]
 				hds = round(HDInterval::hdi(R2_mdsCSNul),3); meanV = mean(R2_mdsCSNul); results_2a[i,"CS_R2_null"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				hds = round(HDInterval::hdi(R2_mdsCSEnv),3); meanV = mean(R2_mdsCSEnv); results_2a[i,"CS_R2_env"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				vS = R2_mdsCSEnv-R2_mdsCSNul; hds = round(HDInterval::hdi(vS)[1:2],3); meanV = mean(vS); results_2a[i,"CS_Q"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				p = sum(R2_mdsCSEnv>R2_mdsCSNul)/length(R2_mdsCSNul); results_2a[i,"CS_pQ"] = round(p,2); results_2a[i,"CS_BF"] = round(p/(1-p),1)
-				R2_cartoNul = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_original_coordinates.log"), header=T)[52:501,"location.squareddistTime4.Rsquared"]
-				R2_cartoEnv = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_cartogram_transform.log"), header=T)[52:501,"location.squareddistTime4.Rsquared"]
+				R2_cartoNul = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_original_coordinates.log"), header=T)
+				R2_cartoNul = R2_cartoNul[sample((((dim(R2_cartoNul)[1]-1)/10)+2):dim(R2_cartoNul)[1],900,replace=F),"location.squareddistTime4.Rsquared"]
+				R2_cartoEnv = read.table(paste0(simulationDirectory,"/All_BEAST_analyses/TreeSimulations_",i,"_cartogram_transform.log"), header=T)
+				R2_cartoEnv = R2_cartoEnv[sample((((dim(R2_cartoEnv)[1]-1)/10)+2):dim(R2_cartoEnv)[1],900,replace=F),"location.squareddistTime4.Rsquared"]
 				hds = round(HDInterval::hdi(R2_cartoNul),3); meanV = mean(R2_cartoNul); results_3a[i,"CGT_R2_null"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				hds = round(HDInterval::hdi(R2_cartoEnv),3); meanV = mean(R2_cartoEnv); results_3a[i,"CGT_R2_env"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
 				vS = R2_cartoEnv-R2_cartoNul; hds = round(HDInterval::hdi(vS)[1:2],3); meanV = mean(vS); results_3a[i,"CGT_Q"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
@@ -1148,4 +1203,55 @@ for (g in 1:length(simulationDirectories))
 		cat("CGT-2: Q = ",round(mean(vS1),3)," [",ci1[1],", ",ci1[2],"], p(Q>0) = ",round(mean(vS2),2)," [",ci2[1],", ",ci2[2],"], ",sep="")
 		cat("BF>3: ",sum(BFs>=3),"/",length(BFs),", BF>20: ",sum(BFs>=20),"/",length(BFs),"\n",sep="")
 	}	
+
+simulationDirectory = "All_MCC_simulations/RABV_US1_on_DCs/RABV_US1_CS_s_3"; analyses = c("cartogram_k100Trans"); nberOfSimulations = 10
+results_3b = matrix(nrow=nberOfSimulations, ncol=5); colnames(results_3b) = c("CGT_R2_null","CGT_R2_env","CGT_Q","CGT_pQ","CGT_BF")
+for (i in 1:nberOfSimulations)
+	{
+		results = matrix(nrow=nberOfExtractionFiles, ncol=6); colnames(results) = c("MDS_LC_R2_null","MDS_LC_R2_env","MDS_CS_R2_null","MDS_CS_R2_env","CGT_R2_null","CGT_R2_env")
+		for (j in 1:nberOfExtractionFiles)
+			{
+				tab = read.csv(paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_MDS_LC_null_raster_ext/TreeExtractions_",j,".csv"))
+				x1 = tab[,"startLon"]; y1 = tab[,"startLat"]; x2 = tab[,"endLon"]; y2 = tab[,"endLat"]
+				durations4 = 4*tab[,"length"]; distances = sqrt(((x2-x1)^2)+((y2-y1)^2)); squareDistances = distances^2 # --> Euclidean distances !!
+	 			LM = lm(durations4 ~ squareDistances); results[j,"MDS_LC_R2_null"] = summary(LM)$r.squared
+				tab = read.csv(paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_MDS_LC_env_raster_ext/TreeExtractions_",j,".csv"))
+				x1 = tab[,"startLon"]; y1 = tab[,"startLat"]; durations4 = 4*tab[,"length"]; x2 = tab[,"endLon"]; y2 = tab[,"endLat"]
+				durations4 = 4*tab[,"length"]; distances = sqrt(((x2-x1)^2)+((y2-y1)^2)); squareDistances = distances^2 # --> Euclidean distances !!
+	 			LM = lm(durations4 ~ squareDistances); results[j,"MDS_LC_R2_env"] = summary(LM)$r.squared
+				tab = read.csv(paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_MDS_CS_null_raster_ext/TreeExtractions_",j,".csv"))
+				x1 = tab[,"startLon"]; y1 = tab[,"startLat"]; x2 = tab[,"endLon"]; y2 = tab[,"endLat"]
+				durations4 = 4*tab[,"length"]; distances = sqrt(((x2-x1)^2)+((y2-y1)^2)); squareDistances = distances^2 # --> Euclidean distances !!
+	 			LM = lm(durations4 ~ squareDistances); results[j,"MDS_CS_R2_null"] = summary(LM)$r.squared
+				tab = read.csv(paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_MDS_CS_env_raster_ext/TreeExtractions_",j,".csv"))
+				x1 = tab[,"startLon"]; y1 = tab[,"startLat"]; x2 = tab[,"endLon"]; y2 = tab[,"endLat"]
+				durations4 = 4*tab[,"length"]; distances = sqrt(((x2-x1)^2)+((y2-y1)^2)); squareDistances = distances^2 # --> Euclidean distances !!
+	 			LM = lm(durations4 ~ squareDistances); results[j,"MDS_CS_R2_env"] = summary(LM)$r.squared
+				tab = read.csv(paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_original_coordinates_ext/TreeExtractions_",j,".csv"))
+				x1 = cbind(tab[,"startLon"],tab[,"startLat"]); x2 = cbind(tab[,"endLon"],tab[,"endLat"])
+	 			durations4 = 4*tab[,"length"]; distances = diag(rdist.earth(x1, x2, miles=F, R=NULL)); squareDistances = distances^2 # --> great-circle distances !!
+	 			LM = lm(durations4 ~ squareDistances); results[j,"CGT_R2_null"] = summary(LM)$r.squared
+				tab = read.csv(paste0(simulationDirectory,"/Seraphim_analyses/TreeSimulations_",i,"_cartogram_k100Trans_ext/TreeExtractions_",j,".csv"))
+				x1 = tab[,"startLon"]; y1 = tab[,"startLat"]; x2 = tab[,"endLon"]; y2 = tab[,"endLat"]
+				durations4 = 4*tab[,"length"]; distances = sqrt(((x2-x1)^2)+((y2-y1)^2)); squareDistances = distances^2 # --> Euclidean distances !!
+	 			LM = lm(durations4 ~ squareDistances); results[j,"CGT_R2_env"] = summary(LM)$r.squared
+			}
+		hds = round(HDInterval::hdi(results[,"CGT_R2_null"])[1:2],3); meanV = mean(results[,"CGT_R2_null"])
+		results_3b[i,"CGT_R2_null"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
+		hds = round(HDInterval::hdi(results[,"CGT_R2_env"])[1:2],3); meanV = mean(results[,"CGT_R2_env"])
+		results_3b[i,"CGT_R2_env"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
+		vS = results[,"CGT_R2_env"]-results[,"CGT_R2_null"]; hds = round(HDInterval::hdi(vS)[1:2],3); meanV = mean(vS)
+		results_3b[i,"CGT_Q"] = paste0(round(meanV,3)," [",hds[1],", ",hds[2],"]")
+		p = sum(results[,"CGT_R2_env"]>results[,"CGT_R2_null"])/dim(results)[1]
+		results_3b[i,"CGT_pQ"] = p; results_3b[i,"CGT_BF"] = round(p/(1-p),1)
+	}
+write.table(results_3b, paste0("Cartog_transfo2_k100.csv"), row.names=F, quote=F, sep=";")
+results_3b = cleanResultsTable(read.csv(paste0("Cartog_transfo2_k100.csv"), head=T, sep=";"))
+write.table(results_3b, paste0("Cartog_transfo2_k100.csv"), row.names=F, quote=F, sep="\t")
+vS1 = results_3b[,"CGT_Q"]; vS2 = as.numeric(results_3b[,"CGT_pQ"]); tmp = rep(NA, length(vS1))
+for (i in 1:length(vS1)) tmp[i] = as.numeric(unlist(strsplit(vS1[i]," \\["))[1])
+vS1 = tmp; ci1 = round(quantile(vS1,c(0.025,0.975)),3); ci2 = round(quantile(vS2,c(0.025,0.975)),2)
+BFs = as.numeric(gsub(">","",results_3b[,"CGT_BF"])); BFs = BFs[!is.na(BFs)]
+cat("CGT-2: Q = ",round(mean(vS1),3)," [",ci1[1],", ",ci1[2],"], p(Q>0) = ",round(mean(vS2),2)," [",ci2[1],", ",ci2[2],"], ",sep="")
+cat("BF>3: ",sum(BFs>=3),"/",length(BFs),", BF>20: ",sum(BFs>=20),"/",length(BFs),"\n",sep="")
 

@@ -1,0 +1,23 @@
+
+Operator analysis
+Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) Smoothed_Pr(accept)
+scale(kappa)                                      0.69    592532     76538    0.13     0.2341      0.25        
+deltaExchange(frequencies)                        0.028   593595     76790    0.13     0.234       0.28        
+scale(alpha)                                      0.438   593797     76082    0.13     0.2339      0.24        
+scale(ucld.mean)                                  0.863   1779485    230826   0.13     0.234       0.25        
+scale(ucld.stdev)                                 0.704   1774667    229232   0.13     0.2342      0.26        
+up:nodeHeights(treeModel) down:ucld.mean          0.985   1778488    154018   0.09     0.234       0.23        
+swapOperator(branchRates.categories)                      5925703    401114   0.07     0.3128      0.22        
+uniformInteger(branchRates.categories)                    5928252    359965   0.06     0.4487      0.41        
+subtreeSlide(treeModel)                           1.154   17778999   1044814  0.06     0.2341      0.23        
+Narrow Exchange(treeModel)                                17786854   741387   0.04     0.0931      0.09        
+Wide Exchange(treeModel)                                  1779590    21377    0.01     0.0023      0.01        
+wilsonBalding(treeModel)                                  1780398    122689   0.07     0.0028      0.0         
+scale(treeModel.rootHeight)                       0.188   1781398    103466   0.06     0.234       0.21        
+uniform(nodeHeights(treeModel))                           17785308   1275718  0.07     0.3005      0.34        
+gmrfBlockUpdateOperator                                   1184741    15943    0.01     0.7771      0.87        
+scale(skygrid.precision)                          0.206   592789     8752     0.01     0.2341      0.27        
+scale(location.halfDF)                            0.425   592997     8414     0.01     0.2339      0.21        
+scale(location.diffusion.rates)                   0.147   17784744   326195   0.02     0.2339      0.22        
+precisionGibbsOperator                                    1185663    21498    0.02     1.0         1.0         
+

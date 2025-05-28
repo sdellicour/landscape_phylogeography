@@ -1,0 +1,11 @@
+BEAGLEPATH="/usr/local/lib/"
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_1_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_2_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_3_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_4_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_5_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_6_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_7_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_8_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_9_cartogram_k100Trans.xml
+java -Djava.library.path="$BEAGLEPATH" -jar beast_1_10_version_1_10_5_30-12-2024.jar TreeSimulations_10_cartogram_k100Trans.xml

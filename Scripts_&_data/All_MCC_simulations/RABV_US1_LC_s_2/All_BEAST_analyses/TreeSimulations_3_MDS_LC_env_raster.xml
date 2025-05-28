@@ -1078,7 +1078,7 @@
 	 
  
 	<!-- Define MCMC                                                             --> 
-	<mcmc id="mcmc" chainLength="100000000" autoOptimize="true" operatorAnalysis="TreeSimulations_3_MDS_LC_env_raster.ops"> 
+	<mcmc id="mcmc" chainLength="500000000" autoOptimize="true" operatorAnalysis="TreeSimulations_3_MDS_LC_env_raster.ops"> 
 		<joint id="joint"> 
 			<prior id="prior"> 
 				<logNormalPrior mu="1.0" sigma="1.25" offset="0.0"> 

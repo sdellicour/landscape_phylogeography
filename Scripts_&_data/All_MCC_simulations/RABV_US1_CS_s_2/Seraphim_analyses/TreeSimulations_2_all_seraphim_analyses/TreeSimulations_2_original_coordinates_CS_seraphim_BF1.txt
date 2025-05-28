@@ -1,3 +1,3 @@
 BFs_Q_LR_randomisation_1
 null_raster	NA
-Elevation_16_k10_R	3.7619
+Elevation_16_k10_R	2.7037
